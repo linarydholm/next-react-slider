@@ -8,8 +8,17 @@ import tyler from '@/app/(img)/tyler-clemmensen-4gSavS9pe1s-unsplash.jpg';
 // components
 import { ImageSlider } from './(components)/ImageSlider';
 
+export type ImageProps = {
+  src: string;
+  height: number;
+  width: number;
+  blurDataURL?: string;
+  blurWidth?: number;
+  blurHeight?: number;
+};
+
 // variables
-const images = [chris, dhiva, josh, marek, tyler];
+const images: ImageProps[] = [chris, dhiva, josh, marek, tyler];
 
 export default function App() {
   return (

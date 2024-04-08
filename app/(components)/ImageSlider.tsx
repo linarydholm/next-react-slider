@@ -1,29 +1,16 @@
 'use client';
-// icons
-import { CornerDownLeft, CornerDownRight } from 'lucide-react';
-
-// packages
 // https://www.npmjs.com/package/tailwind-cn
 import { cn } from 'tailwind-cn';
-
-// hooks
+import { CornerDownLeft, CornerDownRight } from 'lucide-react';
 import { useState } from 'react';
-
-// components
 import Image from 'next/image';
+import { ImageProps } from '../page';
 
-// TypeScript types
-type ImageProps = {
-  src: string;
-  height: number;
-  width: number;
-  blurDataURL: string;
-  blurWidth: number;
-  blurHeight: number;
+type ImagesProps = {
+  images: ImageProps[];
 };
 
-// Component
-export function ImageSlider(props) {
+export function ImageSlider(props: ImagesProps) {
   const { images } = props;
 
   const [imageIndex, setImageIndex] = useState(0);
@@ -80,7 +67,7 @@ export function ImageSlider(props) {
       </button>
 
       <div className="absolute bottom-0 flex gap-6 left-1/2 -translate-x-1/2 mb-4 mx-auto">
-        {images.map((_, index) => {
+        {images.map((_image: ImageProps, index: number) => {
           const cnClass = cn(
             'text-gray-400 bg-white bg-opacity-75 hover:bg-opacity-85 h-9 w-9 rounded hover:text-red-500 transition-colors',
             index + 1 === imageIndex + 1 && 'text-red-500 bg-opacity-85'
