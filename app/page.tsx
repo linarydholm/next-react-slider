@@ -35,12 +35,16 @@ export default function App() {
   return (
     <div className="max-w-2xl w-1/2 aspect-[4/5] mx-auto my-0">
       <ImageSlider images={images} />
-      <a
-        href="/"
-        className="text-3xl"
-      >
-        Link
-      </a>
+
+      <div className="pt-4">
+        <a
+          href="/"
+          className="text-2xl mt-4"
+        >
+          If you skip slider controls you end up here!
+        </a>
+        <p>Press enter on &#34;skip image slider controls&#34; then tab.</p>
+      </div>
     </div>
   );
 }
