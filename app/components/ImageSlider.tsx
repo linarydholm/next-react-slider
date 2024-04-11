@@ -1,7 +1,7 @@
 'use client';
 
 // https://www.npmjs.com/package/tailwind-cn
-import { cn } from 'tailwind-cn';
+import { cn } from '../utils/cn';
 import { Circle, CircleDot, CornerDownLeft, CornerDownRight } from 'lucide-react';
 import { useState } from 'react';
 import Image from 'next/image';
@@ -15,6 +15,7 @@ export function ImageSlider(props: ImagesProps) {
   const { images } = props;
   const [imageIndex, setImageIndex] = useState(0);
 
+  // buttons
   function showPrevImage() {
     setImageIndex((index) => {
       if (index === 0) return images.length - 1;
