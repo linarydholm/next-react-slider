@@ -9,15 +9,11 @@ export function Test({ title = 'example title', ...otherProps }: TestProps) {
   return (
     <>
       <div
-        className={cn(
-          'bg-white text-black w-full h-full',
-          otherProps.className,
-          title === 'example component 4' && 'text-green-500'
-        )}
+        className={cn('bg-white text-black w-full h-full p-2', otherProps.className)}
         {...otherProps}
       >
         {title}
-        <p>Hej</p>
+        <p className="">{'<Test />'}</p>
       </div>
     </>
   );
