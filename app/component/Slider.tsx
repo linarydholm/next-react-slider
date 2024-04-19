@@ -1,56 +1,64 @@
-import { cn } from '../utils/cn';
+'use client';
 
+// imports
+import { useDragScroll } from '../dash/useDragScroll';
+import { cn } from '../utils/cn';
+import { Children, useRef } from 'react';
+
+// typescript
 interface SliderProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode | React.ReactNode[];
-  variant?: 'default' | 'fullscreen';
-  aspectRatio?: 'default' | 'square' | 'video' | 'card';
-  componentWidth?: '1/4' | '1/3' | '1/2' | '1/1';
-  scrollSnap?: 'start' | 'center' | 'end';
-  padAndGap?: 0 | 1 | 2 | 3;
 }
 
-export function Slider({
-  children,
-  variant = 'default',
-  aspectRatio = 'default',
-  componentWidth = '1/1',
-  padAndGap = 0,
-  scrollSnap = 'start',
-  ...props
-}: SliderProps) {
-  // receive props:
-  // variant: 'default' | 'fullscreen'
-  // aspectRatio: 'default' | 'square' | 'video' | 'card'
-  // componentWidth: '1/4' | '1/3' | '1/2' | '1/1'
-  // padAndGap: 1 | 2 | 3
+// useref!!!
+
+// component
+export function Slider({ children, className, ...restProps }: SliderProps) {
+  const ref = useRef<HTMLElement>(null);
+  useDragScroll(ref);
+
+  // useDragScroll(ref, {
+  //   onGestureStart: (event) => {
+  //     console.log(event);
+  //   },
+  //   onGestureMove: (event) => {
+  //     console.log(event);
+  //   },
+  //   onGestureEnd: (event) => {
+  //     console.log(event);
+  //   },
+  // });
 
   return (
-    <div
-      {...props}
+    <section
+      {...restProps}
+      ref={ref}
       className={cn(
-        // kanske: max-h-screen?
-        'flex overflow-hidden overflow-x-auto overscroll-x-contain *:object-cover snap-x snap-mandatory *:snap-normal max-w-7xl m-auto',
-        props.className,
-        // aspect ratio on children
-        aspectRatio === 'default' && '*:aspect-auto',
-        aspectRatio === 'square' && '*:aspect-square',
-        aspectRatio === 'video' && '*:aspect-video',
-        aspectRatio === 'card' && '*:aspect-[4/5]',
-        // component width on children
-        componentWidth === '1/1' && '*:w-full',
-        componentWidth === '1/2' && '*:w-1/2',
-        componentWidth === '1/3' && '*:w-1/3',
-        componentWidth === '1/4' && '*:w-1/4',
-        // padding & gap (scroll padding also? (scroll-p))
-        padAndGap === 0 && 'gap-0 p-0 scroll-p-0',
-        padAndGap === 2 && 'gap-2 p-2 scroll-pl-2',
-        // scroll snap on children
-        scrollSnap === 'start' && '*:snap-start',
-        scrollSnap === 'center' && '*:snap-center',
-        scrollSnap === 'end' && '*:snap-end'
+        // settings:
+        // padding X and Y
+        // max width
+        // scroll snap
+        // aspect ratio (try to place it right with Image component from next)
+        'Slider bg-purple-400 p-6 overflow-x-auto flex border-4 border-red-500 max-w-screen-2xl m-auto gap-2 snap-x snap-mandatory scroll-p-6',
+        // classes based on settings for Slider goes here
+        className
       )}
     >
-      {children}
-    </div>
+      {Children.map(children, (child, index) => {
+        return (
+          <div
+            className={cn(
+              // settings:
+              // width (on child component)
+              'SliderComponent shrink-0 grow-0 w-60 md:w-80 lg:w-96 snap-start snap-normal'
+              // classes based on settings for Slider (but for SliderComponent) goes here
+            )}
+            key={index}
+          >
+            {child}
+          </div>
+        );
+      })}
+    </section>
   );
 }
