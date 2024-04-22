@@ -1,14 +1,16 @@
 // imports
-import { Slider } from './component/Slider';
+import { Slider } from './components/Slider';
 import { products } from './__mock__/data';
-import { Test } from './component/Test';
-import { SliderComponent } from './component/SliderComponent';
-import { TutorialSlider } from './component/TutorialSlider';
+import { Test } from './components/Test';
+import { SliderComponent } from './components/SliderComponent';
 import Image from 'next/image';
+import { ProfileCard } from './components/ProfileCard';
+import { profileData as profiles } from './__mock__/profileData';
 
 // component
 export default function App() {
-  console.log('TJAAAA', products);
+  // console.log('k', profiles);
+  // console.log('TJAAAA', products);
 
   return (
     <div>
@@ -29,7 +31,9 @@ export default function App() {
       <br />
 
       <Slider
-      // settings for Slider here
+        // settings for Slider here
+        sliderClassNames=""
+        sliderComponentClassNames=""
       >
         {products.map((product, index) => {
           return (
@@ -49,6 +53,21 @@ export default function App() {
           );
         })}
       </Slider>
+
+      <br />
+
+      <div className="flex justify-center items-center">
+        {profiles.map((profile, index) => {
+          // console.log('tja', profile);
+
+          return (
+            <ProfileCard
+              key={index}
+              profile={profile}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }
