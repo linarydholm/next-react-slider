@@ -1,5 +1,5 @@
 // imports
-import { Children, isValidElement, cloneElement, HTMLAttributes } from 'react';
+import { Children, isValidElement, cloneElement, HTMLAttributes, useRef } from 'react';
 import { cn } from '../utils/cn';
 
 // TypeScript
@@ -11,12 +11,14 @@ interface SliderComponentProps extends HTMLAttributes<HTMLElement> {
 // Component
 export function SliderComponent({ children, ...restProps }: SliderComponentProps) {
   // console.log(children);
+  // const ref = useRef(null);
 
   return (
     <>
       {Children.map(children, (child, index) => {
         return (
           <div
+            // ref={ref}
             {...restProps}
             // settings:
             // aspect-ratio

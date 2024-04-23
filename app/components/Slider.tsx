@@ -25,8 +25,6 @@ SliderProps) {
   const ref = useRef<HTMLElement>(null);
   const [mouseIsDownAndInSlider, setMouseIsDownAndInSlider] = useState(false);
   const [currentX, setCurrentX] = useState(0);
-  const [prevX, setPrevX] = useState(0);
-  const [movementX, setMovementX] = useState(0);
   const [preventClick, setPreventClick] = useState(false);
 
   //functions
@@ -50,12 +48,16 @@ SliderProps) {
     }
   };
 
+  const handleScroll = () => {
+    if (ref.current) {
+      setCurrentX(ref.current.scrollLeft);
+    }
+  };
+
   const handleOnMouseDown = (e: React.MouseEvent<HTMLElement>) => {
     if (ref.current?.classList.contains('Slider') && !mouseIsDownAndInSlider) {
-      setMouseIsDownAndInSlider((mouseIsDownAndInSlider) => !mouseIsDownAndInSlider);
+      setMouseIsDownAndInSlider(true);
       setPreventClick(true);
-
-      returnXPosition(e);
     }
   };
 
@@ -63,8 +65,6 @@ SliderProps) {
     if (mouseIsDownAndInSlider) {
       setMouseIsDownAndInSlider((mouseIsDownAndInSlider) => !mouseIsDownAndInSlider);
       setPreventClick(false);
-
-      returnXPosition(e);
     }
   };
 
@@ -78,24 +78,24 @@ SliderProps) {
   };
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
+    // stänger av drag scroll när man lämnar slider
     if (mouseIsDownAndInSlider) {
       setMouseIsDownAndInSlider((mouseIsDownAndInSlider) => !mouseIsDownAndInSlider);
       setPreventClick(false);
-
-      returnXPosition(e);
     }
   };
 
   // console.logs
   useEffect(() => {
-    console.log('currentX:', currentX);
-  }, [mouseIsDownAndInSlider, ref, currentX, preventClick, prevX, movementX]);
+    // console.log('currentX:', currentX);
+  }, [mouseIsDownAndInSlider, ref, currentX, preventClick]);
 
   // return
   return (
     <section
       {...restProps}
       ref={ref}
+      onScroll={handleScroll}
       onMouseDown={(e) => {
         handleOnMouseDown(e);
       }}
@@ -109,16 +109,19 @@ SliderProps) {
         handleMouseLeave(e);
       }}
       className={cn(
-        'Slider bg-purple-400 overflow-x-scroll overscroll-x-contain m-auto flex p-12 max-w-screen-2xl gap-6 snap-x snap-mandatory scroll-p-12',
-        sliderClassNames
+        'Slider bg-purple-400 overflow-x-scroll overscroll-x-contain m-auto flex p-12 w-full max-w-screen-2xl gap-6 cursor-grab',
+        sliderClassNames,
+        mouseIsDownAndInSlider && 'cursor-grabbing'
+        // 'snap-x snap-mandatory scroll-p-12'
       )}
     >
       {Children.map(children, (child, index) => {
         return (
           <div
             className={cn(
-              'SliderComponent shrink-0 grow-0 w-60 md:w-80 lg:w-96 snap-start snap-normal',
+              'SliderComponent shrink-0 grow-0 w-60 md:w-80 lg:w-96',
               sliderComponentClassNames
+              // 'snap-start snap-normal'
             )}
             key={index}
           >
@@ -126,6 +129,8 @@ SliderProps) {
           </div>
         );
       })}
+
+      {/* <div>hej</div> */}
     </section>
   );
 }
