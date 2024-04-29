@@ -12,10 +12,8 @@ interface SliderProps extends React.HTMLAttributes<HTMLElement> {
 
 export function Slider({ children, className, buttons = true, ...restProps }: SliderProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-
   const [mouseIsDown, setMouseIsDown] = useState(false);
   const [currentX, setCurrentX] = useState(0);
-
   const scrollMax = ref.current ? ref.current.scrollWidth - ref.current.clientWidth : 0;
 
   const handleScroll = () => {
@@ -23,28 +21,30 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
       setCurrentX(ref.current.scrollLeft);
     }
   };
+
   const handleMouseDown = () => {
     if (!mouseIsDown) {
       setMouseIsDown(true);
     }
   };
+
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (mouseIsDown) {
       e.preventDefault();
       e.stopPropagation();
-
       const { movementX } = e;
-
       if (movementX > 0 || movementX < 0) {
         setCurrentX((currentX) => (currentX -= movementX));
       }
     }
   };
+
   const handleMouseUp = () => {
     if (mouseIsDown) {
       setMouseIsDown(false);
     }
   };
+
   const handleMouseLeave = () => {
     if (mouseIsDown) {
       setMouseIsDown(false);
@@ -62,6 +62,7 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
       return currentX;
     }
   };
+
   useEffect(() => {
     const updatedCurrentX = checkAndReturnCurrentX(currentX, scrollMax);
     if (ref.current) {
@@ -71,11 +72,8 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
   }, [currentX, scrollMax]);
 
   useEffect(() => {
-    // console.log('currentX:', currentX);
-    // console.log('mouseIsDown:', mouseIsDown);
     console.log('scrollMax:', scrollMax);
-    // console.log('ref.current:', ref.current);
-  }, [currentX, mouseIsDown, scrollMax]);
+  }, [scrollMax]);
 
   return (
     <section
