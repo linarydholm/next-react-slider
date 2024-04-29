@@ -77,7 +77,7 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
       setCurrentX(updatedCurrentX);
     }
 
-    console.log(currentX, scrollMax);
+    // console.log(currentX, scrollMax);
   }, [currentX, scrollMax]);
 
   return (
@@ -95,9 +95,10 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
           <button
             className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 left-6"
             onClick={() => {
-              console.log('left');
-              setCurrentX(
-                (currentX) => (currentX -= sliderComponentsRef.current?.clientWidth * 0.5 || 0)
+              setCurrentX((currentX) =>
+                sliderComponentsRef.current
+                  ? (currentX -= sliderComponentsRef.current.clientWidth * 0.5)
+                  : (currentX -= 0)
               );
             }}
           >
@@ -111,9 +112,10 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
           <button
             className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 right-6"
             onClick={() => {
-              console.log('right');
-              setCurrentX(
-                (currentX) => (currentX += sliderComponentsRef.current?.clientWidth * 0.5 || 0)
+              setCurrentX((currentX) =>
+                sliderComponentsRef.current
+                  ? (currentX += sliderComponentsRef.current.clientWidth * 0.5)
+                  : (currentX += 0)
               );
             }}
           >
