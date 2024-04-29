@@ -1,22 +1,15 @@
 // imports
 import { products } from './__mock__/data';
 import Image from 'next/image';
-import { Slider, SliderComponents, SliderComponent, SliderButtons } from './components';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Slider, SliderComponents, SliderComponent } from './components';
 
 // component
 export default function App() {
   return (
-    <Slider>
-      <SliderButtons>
-        <button className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 left-6">
-          <ChevronLeft />
-        </button>
-        <button className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 right-6">
-          <ChevronRight />
-        </button>
-      </SliderButtons>
-
+    <Slider
+    // available settings:
+    // buttons={false} (defaults to true)
+    >
       <SliderComponents>
         {products.map((product, index) => {
           return (

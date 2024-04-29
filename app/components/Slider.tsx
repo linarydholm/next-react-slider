@@ -1,23 +1,20 @@
 'use client';
-import React, { Children, cloneElement, isValidElement, useEffect } from 'react';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { cn } from '../utils/cn';
-
-interface SliderChildProps {
-  currentX: number;
-  setCurrentX: React.Dispatch<React.SetStateAction<number>>;
-}
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { SliderButtons } from './SliderButtons';
 
 interface SliderProps extends React.HTMLAttributes<HTMLElement> {
-  children: React.ReactElement<SliderChildProps> | React.ReactElement<SliderChildProps>[];
+  children: React.ReactElement | React.ReactElement[];
   className?: string;
+  buttons?: boolean;
 }
 
-export function Slider({ children, className, ...restProps }: SliderProps) {
+export function Slider({ children, className, buttons = true, ...restProps }: SliderProps) {
   const ref = useRef<HTMLDivElement | null>(null);
 
-  const [currentX, setCurrentX] = useState(0);
   const [mouseIsDown, setMouseIsDown] = useState(false);
+  const [currentX, setCurrentX] = useState(0);
 
   const scrollMax = ref.current ? ref.current.scrollWidth - ref.current.clientWidth : 0;
 
@@ -53,6 +50,7 @@ export function Slider({ children, className, ...restProps }: SliderProps) {
       setMouseIsDown(false);
     }
   };
+
   const checkAndReturnCurrentX = (currentX: number, scrollMax: number) => {
     if (currentX < 0) {
       setCurrentX(0);
@@ -64,30 +62,43 @@ export function Slider({ children, className, ...restProps }: SliderProps) {
       return currentX;
     }
   };
-
   useEffect(() => {
     const updatedCurrentX = checkAndReturnCurrentX(currentX, scrollMax);
     if (ref.current) {
       ref.current.scrollLeft = updatedCurrentX;
       setCurrentX(updatedCurrentX);
     }
-    console.log('updatedCurrentX:', updatedCurrentX);
   }, [currentX, scrollMax]);
 
-  const childrenWithProps = Children.map(children, (child) => {
-    if (isValidElement<SliderChildProps>(child)) {
-      return cloneElement(child, { currentX, setCurrentX });
-    }
-    return child;
-  });
+  useEffect(() => {
+    // console.log('currentX:', currentX);
+    // console.log('mouseIsDown:', mouseIsDown);
+    console.log('scrollMax:', scrollMax);
+    // console.log('ref.current:', ref.current);
+  }, [currentX, mouseIsDown, scrollMax]);
 
   return (
     <section
       ref={ref}
       {...restProps}
+      onScroll={handleScroll}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
       className={cn('Slider relative max-w-7xl m-auto', className)}
     >
-      {childrenWithProps}
+      <SliderButtons buttons={buttons}>
+        <button className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 left-6">
+          <ChevronLeft />
+        </button>
+
+        <button className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 right-6">
+          <ChevronRight />
+        </button>
+      </SliderButtons>
+
+      {children}
     </section>
   );
 }
