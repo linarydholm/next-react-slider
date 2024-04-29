@@ -1,9 +1,8 @@
 'use client';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, Children } from 'react';
 import { cn } from '../utils/cn';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SliderButtons } from './SliderButtons';
-import { SliderComponents } from './SliderComponents';
 
 interface SliderProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactElement | React.ReactElement[];
@@ -107,7 +106,13 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
           mouseIsDown && 'cursor-grabbing'
         )}
       >
-        {children}
+        {Children.map(children, (child) => {
+          return (
+            <div className="SliderComponent grow-0 shrink-0 overflow-hidden w-80 h-80 *:object-cover *:h-full *:w-full">
+              {child}
+            </div>
+          );
+        })}
       </div>
     </section>
   );
