@@ -1,4 +1,5 @@
 'use client';
+
 // imports
 import { cn } from '../utils/cn';
 
@@ -24,12 +25,10 @@ export const SliderButtons = ({
           'SliderButtons absolute pointer-events-none inset-0 border border-red-500',
           className
         )}
-        onClick={() => {
-          console.log('hej');
-        }}
       >
         {children}
       </div>
     );
   }
+  return;
 };

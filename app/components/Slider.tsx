@@ -1,8 +1,8 @@
 'use client';
 import { useRef, useState, useEffect, Children } from 'react';
 import { cn } from '../utils/cn';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SliderButtons } from './SliderButtons';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface SliderProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactElement | React.ReactElement[];
@@ -76,6 +76,8 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
       sliderComponentsRef.current.scrollLeft = updatedCurrentX;
       setCurrentX(updatedCurrentX);
     }
+
+    console.log(currentX, scrollMax);
   }, [currentX, scrollMax]);
 
   return (
@@ -89,13 +91,35 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
       className={cn('Slider relative max-w-7xl m-auto', className)}
     >
       <SliderButtons buttons={buttons}>
-        <button className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 left-6">
-          <ChevronLeft />
-        </button>
+        {currentX > 0 && (
+          <button
+            className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 left-6"
+            onClick={() => {
+              console.log('left');
+              setCurrentX(
+                (currentX) => (currentX -= sliderComponentsRef.current?.clientWidth * 0.5 || 0)
+              );
+            }}
+          >
+            <ChevronLeft />
+          </button>
+        )}
 
-        <button className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 right-6">
-          <ChevronRight />
-        </button>
+        {(currentX < 0 ||
+          (currentX >= 0 && currentX !== scrollMax) ||
+          (currentX === 0 && scrollMax === 0)) && (
+          <button
+            className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 right-6"
+            onClick={() => {
+              console.log('right');
+              setCurrentX(
+                (currentX) => (currentX += sliderComponentsRef.current?.clientWidth * 0.5 || 0)
+              );
+            }}
+          >
+            <ChevronRight />
+          </button>
+        )}
       </SliderButtons>
 
       <div
