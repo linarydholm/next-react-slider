@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from 'react';
 import { cn } from '../utils/cn';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SliderButtons } from './SliderButtons';
+import { SliderComponents } from './SliderComponents';
 
 interface SliderProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactElement | React.ReactElement[];
@@ -11,14 +12,19 @@ interface SliderProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 export function Slider({ children, className, buttons = true, ...restProps }: SliderProps) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [mouseIsDown, setMouseIsDown] = useState(false);
+  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const sliderComponentsRef = useRef<HTMLDivElement | null>(null);
+
   const [currentX, setCurrentX] = useState(0);
-  const scrollMax = ref.current ? ref.current.scrollWidth - ref.current.clientWidth : 0;
+  const [mouseIsDown, setMouseIsDown] = useState(false);
+
+  const scrollMax = sliderComponentsRef.current
+    ? sliderComponentsRef.current.scrollWidth - sliderComponentsRef.current.clientWidth
+    : 0;
 
   const handleScroll = () => {
-    if (ref.current) {
-      setCurrentX(ref.current.scrollLeft);
+    if (sliderComponentsRef.current) {
+      setCurrentX(sliderComponentsRef.current.scrollLeft);
     }
   };
 
@@ -32,7 +38,9 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
     if (mouseIsDown) {
       e.preventDefault();
       e.stopPropagation();
+
       const { movementX } = e;
+
       if (movementX > 0 || movementX < 0) {
         setCurrentX((currentX) => (currentX -= movementX));
       }
@@ -65,21 +73,16 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
 
   useEffect(() => {
     const updatedCurrentX = checkAndReturnCurrentX(currentX, scrollMax);
-    if (ref.current) {
-      ref.current.scrollLeft = updatedCurrentX;
+    if (sliderComponentsRef.current) {
+      sliderComponentsRef.current.scrollLeft = updatedCurrentX;
       setCurrentX(updatedCurrentX);
     }
   }, [currentX, scrollMax]);
 
-  useEffect(() => {
-    console.log('scrollMax:', scrollMax);
-  }, [scrollMax]);
-
   return (
     <section
-      ref={ref}
+      ref={sliderRef}
       {...restProps}
-      onScroll={handleScroll}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -96,7 +99,16 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
         </button>
       </SliderButtons>
 
-      {children}
+      <div
+        ref={sliderComponentsRef}
+        onScroll={handleScroll}
+        className={cn(
+          'SliderComponents bg-purple-300 p-12 flex gap-2 cursor-grab overflow-auto overscroll-x-contain',
+          mouseIsDown && 'cursor-grabbing'
+        )}
+      >
+        {children}
+      </div>
     </section>
   );
 }

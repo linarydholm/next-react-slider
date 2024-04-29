@@ -10,20 +10,18 @@ export default function App() {
     // available settings:
     // buttons={false} (defaults to true)
     >
-      <SliderComponents>
-        {products.map((product, index) => {
-          return (
-            <SliderComponent key={index}>
-              <Image
-                src={product.image.src}
-                alt={product.image.alt}
-                width={2000}
-                height={2000}
-              />
-            </SliderComponent>
-          );
-        })}
-      </SliderComponents>
+      {products.map((product, index) => {
+        return (
+          <SliderComponent key={index}>
+            <Image
+              src={product.image.src}
+              alt={product.image.alt}
+              width={2000}
+              height={2000}
+            />
+          </SliderComponent>
+        );
+      })}
     </Slider>
   );
 }
