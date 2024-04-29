@@ -1,7 +1,6 @@
 'use client';
 import { useRef, useState, useEffect, Children } from 'react';
 import { cn } from '../utils/cn';
-import { SliderButtons } from './SliderButtons';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface SliderProps extends React.HTMLAttributes<HTMLElement> {
@@ -90,39 +89,41 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
       onMouseLeave={handleMouseLeave}
       className={cn('Slider relative max-w-7xl m-auto', className)}
     >
-      <SliderButtons buttons={buttons}>
-        {currentX > 0 && (
-          <button
-            className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 left-6"
-            onClick={() => {
-              setCurrentX((currentX) =>
-                sliderComponentsRef.current
-                  ? (currentX -= sliderComponentsRef.current.clientWidth * 0.5)
-                  : (currentX -= 0)
-              );
-            }}
-          >
-            <ChevronLeft />
-          </button>
-        )}
+      {buttons && (
+        <div className="SliderButtons absolute pointer-events-none inset-0 border border-red-500">
+          {currentX > 0 && (
+            <button
+              className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 left-6"
+              onClick={() => {
+                setCurrentX((currentX) =>
+                  sliderComponentsRef.current
+                    ? (currentX -= sliderComponentsRef.current.clientWidth * 0.5)
+                    : (currentX -= 0)
+                );
+              }}
+            >
+              <ChevronLeft />
+            </button>
+          )}
 
-        {(currentX < 0 ||
-          (currentX >= 0 && currentX !== scrollMax) ||
-          (currentX === 0 && scrollMax === 0)) && (
-          <button
-            className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 right-6"
-            onClick={() => {
-              setCurrentX((currentX) =>
-                sliderComponentsRef.current
-                  ? (currentX += sliderComponentsRef.current.clientWidth * 0.5)
-                  : (currentX += 0)
-              );
-            }}
-          >
-            <ChevronRight />
-          </button>
-        )}
-      </SliderButtons>
+          {(currentX < 0 ||
+            (currentX >= 0 && currentX !== scrollMax) ||
+            (currentX === 0 && scrollMax === 0)) && (
+            <button
+              className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 right-6"
+              onClick={() => {
+                setCurrentX((currentX) =>
+                  sliderComponentsRef.current
+                    ? (currentX += sliderComponentsRef.current.clientWidth * 0.5)
+                    : (currentX += 0)
+                );
+              }}
+            >
+              <ChevronRight />
+            </button>
+          )}
+        </div>
+      )}
 
       <div
         ref={sliderComponentsRef}
