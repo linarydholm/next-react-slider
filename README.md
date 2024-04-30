@@ -1,3 +1,48 @@
+1. Import Slider
+
+2. Map out your components inside <Slider>here</Slider>
+
+3. Send settings as props
+
+4. Available global settings:
+   hasButtons
+   boolean (defaults to true)
+
+   hasScrollbar
+   boolean (defaults to true)
+
+   scrollInPercentage
+   number (should be between 10-100, defaults to 25)
+
+5. You can also add to or override the following classes:
+   sliderWrapper
+   defaults to 'slider-wrapper relative'
+
+   buttonsWrapper
+   defaults to 'buttons-wrapper absolute pointer-events-none inset-0'
+
+   buttonLeft
+   defaults to 'button-left absolute pointer-events-auto',
+   styleButton === 'button-left' && 'hidden'
+
+   buttonRight
+   defaults to 'button-right absolute pointer-events-auto',
+   styleButton === 'button-right' && 'hidden'
+
+   componentsWrapper
+   defaults to 'components-wrapper flex cursor-grab overscroll-x-contain',
+   hasScrollbar ? 'overflow-auto' : 'overflow-hidden',
+   mouseIsDown && 'cursor-grabbing'
+
+   componentWrapper
+   defaults to 'component-wrapper grow-0 shrink-0 overflow-hidden w-60 aspect-auto'
+
+6.
+
+<br/>
+<br/>
+<br/>
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

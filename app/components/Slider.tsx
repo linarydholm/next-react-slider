@@ -1,15 +1,34 @@
 'use client';
-import { useRef, useState, useEffect, Children } from 'react';
+import { useRef, useState, useEffect, Children, use } from 'react';
 import { cn } from '../utils/cn';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface SliderProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactElement | React.ReactElement[];
-  className?: string;
-  buttons?: boolean;
+  hasButtons?: boolean;
+  hasScrollbar?: boolean;
+  scrollInPercentage?: number;
+  sliderWrapper?: string;
+  buttonsWrapper?: string;
+  buttonLeft?: string;
+  buttonRight?: string;
+  componentsWrapper?: string;
+  componentWrapper?: string;
 }
 
-export function Slider({ children, className, buttons = true, ...restProps }: SliderProps) {
+export function Slider({
+  children,
+  hasButtons = true,
+  hasScrollbar = true,
+  scrollInPercentage = 25,
+  sliderWrapper,
+  buttonsWrapper,
+  buttonLeft,
+  buttonRight,
+  componentsWrapper,
+  componentWrapper,
+  ...restProps
+}: SliderProps) {
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const sliderComponentsRef = useRef<HTMLDivElement | null>(null);
 
@@ -87,41 +106,43 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
-      className={cn('Slider relative max-w-7xl m-auto', className)}
+      className={cn('slider-wrapper relative', sliderWrapper)}
     >
-      {buttons && (
-        <div className="SliderButtons absolute pointer-events-none inset-0 border border-red-500">
-          {currentX > 0 && (
+      {hasButtons && (
+        <div className={cn('buttons-wrapper absolute pointer-events-none inset-0', buttonsWrapper)}>
+          {
             <button
-              className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 left-6"
+              className={cn('button-left absolute pointer-events-auto', buttonLeft)}
+              disabled={currentX < 5}
               onClick={() => {
                 setCurrentX((currentX) =>
                   sliderComponentsRef.current
-                    ? (currentX -= sliderComponentsRef.current.clientWidth * 0.5)
+                    ? (currentX -=
+                        sliderComponentsRef.current.clientWidth * (scrollInPercentage / 100))
                     : (currentX -= 0)
                 );
               }}
             >
               <ChevronLeft />
             </button>
-          )}
+          }
 
-          {(currentX < 0 ||
-            (currentX >= 0 && currentX !== scrollMax) ||
-            (currentX === 0 && scrollMax === 0)) && (
+          {
             <button
-              className="pointer-events-auto p-2 bg-white text-gray-900 rounded absolute top-1/2 -translate-y-1/2 right-6"
+              className={cn('button-right absolute pointer-events-auto', buttonRight)}
+              disabled={scrollMax > 0 && currentX > scrollMax - 5}
               onClick={() => {
                 setCurrentX((currentX) =>
                   sliderComponentsRef.current
-                    ? (currentX += sliderComponentsRef.current.clientWidth * 0.5)
+                    ? (currentX +=
+                        (sliderComponentsRef.current.clientWidth * scrollInPercentage) / 100)
                     : (currentX += 0)
                 );
               }}
             >
               <ChevronRight />
             </button>
-          )}
+          }
         </div>
       )}
 
@@ -129,13 +150,20 @@ export function Slider({ children, className, buttons = true, ...restProps }: Sl
         ref={sliderComponentsRef}
         onScroll={handleScroll}
         className={cn(
-          'SliderComponents bg-purple-300 p-12 flex gap-2 cursor-grab overflow-auto overscroll-x-contain',
-          mouseIsDown && 'cursor-grabbing'
+          'components-wrapper flex cursor-grab overscroll-x-contain',
+          hasScrollbar ? 'overflow-auto' : 'overflow-hidden',
+          mouseIsDown && 'cursor-grabbing',
+          componentsWrapper
         )}
       >
         {Children.map(children, (child) => {
           return (
-            <div className="SliderComponent grow-0 shrink-0 overflow-hidden w-80 h-80 *:object-cover *:h-full *:w-full">
+            <div
+              className={cn(
+                'component-wrapper grow-0 shrink-0 overflow-hidden w-60 aspect-auto',
+                componentWrapper
+              )}
+            >
               {child}
             </div>
           );
