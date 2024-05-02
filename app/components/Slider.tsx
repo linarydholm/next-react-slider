@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useState, useEffect, Children, use } from 'react';
+import { useRef, useState, useEffect, Children, createRef } from 'react';
 import { cn } from '../utils/cn';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -7,7 +7,7 @@ interface SliderProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactElement | React.ReactElement[];
   hasButtons?: boolean;
   hasScrollbar?: boolean;
-  scrollInPercentage?: number;
+  scrollWidthInPercentage?: number;
   sliderWrapper?: string;
   buttonsWrapper?: string;
   buttonLeft?: string;
@@ -20,7 +20,7 @@ export function Slider({
   children,
   hasButtons = true,
   hasScrollbar = true,
-  scrollInPercentage = 25,
+  scrollWidthInPercentage = 25,
   sliderWrapper,
   buttonsWrapper,
   buttonLeft,
@@ -31,6 +31,7 @@ export function Slider({
 }: SliderProps) {
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const sliderComponentsRef = useRef<HTMLDivElement | null>(null);
+  const itemEls = useRef<HTMLDivElement[]>([]);
 
   const [currentX, setCurrentX] = useState(0);
   const [mouseIsDown, setMouseIsDown] = useState(false);
@@ -38,6 +39,45 @@ export function Slider({
   const scrollMax = sliderComponentsRef.current
     ? sliderComponentsRef.current.scrollWidth - sliderComponentsRef.current.clientWidth
     : 0;
+
+  // Observera synligheten av barnkomponenter
+  useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 1, // Justera tröskeln efter behov
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      console.log('updated entries:', entries);
+
+      entries.forEach((entry, index) => {
+        // console.log('entry:', index, entry);
+
+        if (entry.isIntersecting) {
+          console.log('visible:', entry.target.getAttribute('data-test'));
+          // Gör något när elementet blir synligt
+        } else {
+          console.log('invisible:', entry.target.getAttribute('data-test'));
+          // Gör något när elementet inte är synligt
+        }
+      });
+    }, options);
+
+    // Observera varje barnkomponent
+    itemEls.current.forEach((element) => {
+      observer.observe(element);
+    });
+
+    // Avsluta observeraren när komponenten avmonteras
+    return () => {
+      itemEls.current.forEach((element) => {
+        observer.unobserve(element);
+      });
+    };
+  }, [children]); // Uppdatera observeraren när children ändras
+
+  // Övriga useEffects och komponentrendering här nedan
 
   const handleScroll = () => {
     if (sliderComponentsRef.current) {
@@ -118,7 +158,7 @@ export function Slider({
                 setCurrentX((currentX) =>
                   sliderComponentsRef.current
                     ? (currentX -=
-                        sliderComponentsRef.current.clientWidth * (scrollInPercentage / 100))
+                        sliderComponentsRef.current.clientWidth * (scrollWidthInPercentage / 100))
                     : (currentX -= 0)
                 );
               }}
@@ -135,7 +175,7 @@ export function Slider({
                 setCurrentX((currentX) =>
                   sliderComponentsRef.current
                     ? (currentX +=
-                        (sliderComponentsRef.current.clientWidth * scrollInPercentage) / 100)
+                        (sliderComponentsRef.current.clientWidth * scrollWidthInPercentage) / 100)
                     : (currentX += 0)
                 );
               }}
@@ -156,9 +196,15 @@ export function Slider({
           componentsWrapper
         )}
       >
-        {Children.map(children, (child) => {
+        {Children.map(children, (child, index) => {
           return (
             <div
+              data-test={`div-${index}`}
+              ref={(element) => {
+                if (element) {
+                  itemEls.current.push(element);
+                }
+              }}
               className={cn(
                 'component-wrapper grow-0 shrink-0 overflow-hidden w-60 aspect-auto',
                 componentWrapper

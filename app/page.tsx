@@ -9,6 +9,7 @@ export default function App() {
     <Slider
       // settings:
       // hasScrollbar={false}
+      scrollWidthInPercentage={50}
       buttonLeft="p-2 bg-white text-gray-900 rounded top-1/2 -translate-y-1/2 left-6 opacity-100 transition-opacity disabled:opacity-0"
       buttonRight="p-2 bg-white text-gray-900 rounded top-1/2 -translate-y-1/2 right-6 opacity-100 transition-opacity disabled:opacity-0"
       componentsWrapper="p-6 gap-6"
