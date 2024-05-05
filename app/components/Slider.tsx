@@ -1,5 +1,6 @@
 'use client';
-import { useRef, useState, useEffect, Children, createRef } from 'react';
+
+import { useRef, useState, useEffect, Children } from 'react';
 import { cn } from '../utils/cn';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -7,6 +8,9 @@ interface SliderProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactElement | React.ReactElement[];
   hasButtons?: boolean;
   hasScrollbar?: boolean;
+  hasAnimation?: boolean;
+  animation?: 'opacity' | 'scale';
+  animationDir?: 'right' | 'both';
   scrollWidthInPercentage?: number;
   sliderWrapper?: string;
   buttonsWrapper?: string;
@@ -20,7 +24,10 @@ export function Slider({
   children,
   hasButtons = true,
   hasScrollbar = true,
-  scrollWidthInPercentage = 25,
+  hasAnimation = true,
+  animation = 'opacity',
+  animationDir = 'right',
+  scrollWidthInPercentage = 75,
   sliderWrapper,
   buttonsWrapper,
   buttonLeft,
@@ -40,26 +47,54 @@ export function Slider({
     ? sliderComponentsRef.current.scrollWidth - sliderComponentsRef.current.clientWidth
     : 0;
 
-  // Observera synligheten av barnkomponenter
+  // Intersection Observer using React: https://dev.to/producthackers/intersection-observer-using-react-49ko
   useEffect(() => {
+    // Intersection observer options: https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API#creating_an_intersection_observer
     const options = {
       root: null,
       rootMargin: '0px',
-      threshold: 1, // Justera tröskeln efter behov
+      threshold: 0,
     };
 
+    // Observe visibility of children components
     const observer = new IntersectionObserver((entries) => {
-      console.log('updated entries:', entries);
-
-      entries.forEach((entry, index) => {
-        // console.log('entry:', index, entry);
-
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          console.log('visible:', entry.target.getAttribute('data-test'));
-          // Gör något när elementet blir synligt
+          // Do something when element is visible
+          if (hasAnimation) {
+            if (animation === 'opacity' && animationDir === 'both') {
+              entry.target.classList.remove('opacity-0');
+              entry.target.classList.add('opacity-100');
+            }
+            if (animation === 'opacity' && animationDir === 'right') {
+              entry.target.classList.add('opacity-100');
+            }
+            if (animation === 'scale' && animationDir === 'both') {
+              entry.target.classList.remove('scale-90');
+              entry.target.classList.add('scale-100');
+            }
+            if (animation === 'scale' && animationDir === 'right') {
+              // do something
+            }
+          }
         } else {
-          console.log('invisible:', entry.target.getAttribute('data-test'));
-          // Gör något när elementet inte är synligt
+          // Do something when element is not visible
+          if (hasAnimation) {
+            if (animation === 'opacity' && animationDir === 'both') {
+              entry.target.classList.add('opacity-0');
+              entry.target.classList.remove('opacity-100');
+            }
+            if (animation === 'opacity' && animationDir === 'right') {
+              entry.target.classList.add('opacity-0');
+            }
+            if (animation === 'scale' && animationDir === 'both') {
+              entry.target.classList.add('scale-90');
+              entry.target.classList.remove('scale-100');
+            }
+            if (animation === 'scale' && animationDir === 'right') {
+              // do something
+            }
+          }
         }
       });
     }, options);
@@ -75,9 +110,7 @@ export function Slider({
         observer.unobserve(element);
       });
     };
-  }, [children]); // Uppdatera observeraren när children ändras
-
-  // Övriga useEffects och komponentrendering här nedan
+  }, [children, hasAnimation, animation, animationDir]); // Uppdatera observeraren när children ändras}
 
   const handleScroll = () => {
     if (sliderComponentsRef.current) {
@@ -85,35 +118,35 @@ export function Slider({
     }
   };
 
-  const handleMouseDown = () => {
-    if (!mouseIsDown) {
-      setMouseIsDown(true);
-    }
+  const handleMouseDown = (e: React.MouseEvent<HTMLElement>) => {
+    if (mouseIsDown) return;
+
+    setMouseIsDown(true);
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    if (mouseIsDown) {
-      e.preventDefault();
-      e.stopPropagation();
+    if (!mouseIsDown) return;
 
-      const { movementX } = e;
+    e.stopPropagation();
+    e.preventDefault();
 
-      if (movementX > 0 || movementX < 0) {
-        setCurrentX((currentX) => (currentX -= movementX));
-      }
+    const { movementX } = e;
+
+    if (movementX > 0 || movementX < 0) {
+      setCurrentX((currentX) => (currentX -= movementX));
     }
   };
 
   const handleMouseUp = () => {
-    if (mouseIsDown) {
-      setMouseIsDown(false);
-    }
+    if (!mouseIsDown) return;
+
+    setMouseIsDown(false);
   };
 
   const handleMouseLeave = () => {
-    if (mouseIsDown) {
-      setMouseIsDown(false);
-    }
+    if (!mouseIsDown) return;
+
+    setMouseIsDown(false);
   };
 
   const checkAndReturnCurrentX = (currentX: number, scrollMax: number) => {
@@ -146,10 +179,15 @@ export function Slider({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
-      className={cn('slider-wrapper relative', sliderWrapper)}
+      className={cn('slider-wrapper relative z-10', sliderWrapper)}
     >
       {hasButtons && (
-        <div className={cn('buttons-wrapper absolute pointer-events-none inset-0', buttonsWrapper)}>
+        <div
+          className={cn(
+            'buttons-wrapper absolute pointer-events-none inset-0 z-30',
+            buttonsWrapper
+          )}
+        >
           {
             <button
               className={cn('button-left absolute pointer-events-auto', buttonLeft)}
@@ -199,7 +237,8 @@ export function Slider({
         {Children.map(children, (child, index) => {
           return (
             <div
-              data-test={`div-${index}`}
+              data-test={`component-wrapper-${index + 1}`}
+              // Storing an array of elements using the useRef hook: https://mattclaffey.medium.com/adding-react-refs-to-an-array-of-items-96e9a12ab40c
               ref={(element) => {
                 if (element) {
                   itemEls.current.push(element);
@@ -207,6 +246,7 @@ export function Slider({
               }}
               className={cn(
                 'component-wrapper grow-0 shrink-0 overflow-hidden w-60 aspect-auto',
+                hasAnimation && 'transition duration-500 ease-in-out',
                 componentWrapper
               )}
             >
