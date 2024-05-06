@@ -9,8 +9,8 @@ interface SliderProps extends React.HTMLAttributes<HTMLElement> {
   hasButtons?: boolean;
   hasScrollbar?: boolean;
   hasAnimation?: boolean;
-  animation?: 'opacity' | 'scale';
-  animationDir?: 'right' | 'both';
+  animationType?: 'opacity' | 'scale';
+  scrollAnimation?: 'reveal' | 'both';
   scrollWidthInPercentage?: number;
   sliderWrapper?: string;
   buttonsWrapper?: string;
@@ -25,9 +25,9 @@ export function Slider({
   hasButtons = true,
   hasScrollbar = true,
   hasAnimation = true,
-  animation = 'opacity',
-  animationDir = 'right',
-  scrollWidthInPercentage = 75,
+  animationType = 'opacity',
+  scrollAnimation = 'reveal',
+  scrollWidthInPercentage = 100,
   sliderWrapper,
   buttonsWrapper,
   buttonLeft,
@@ -42,6 +42,7 @@ export function Slider({
 
   const [currentX, setCurrentX] = useState(0);
   const [mouseIsDown, setMouseIsDown] = useState(false);
+  // const [snapIsOn, setSnapIsOn] = useState(true);
 
   const scrollMax = sliderComponentsRef.current
     ? sliderComponentsRef.current.scrollWidth - sliderComponentsRef.current.clientWidth
@@ -62,36 +63,36 @@ export function Slider({
         if (entry.isIntersecting) {
           // Do something when element is visible
           if (hasAnimation) {
-            if (animation === 'opacity' && animationDir === 'both') {
+            if (animationType === 'opacity' && scrollAnimation === 'both') {
               entry.target.classList.remove('opacity-0');
               entry.target.classList.add('opacity-100');
             }
-            if (animation === 'opacity' && animationDir === 'right') {
+            if (animationType === 'opacity' && scrollAnimation === 'reveal') {
               entry.target.classList.add('opacity-100');
             }
-            if (animation === 'scale' && animationDir === 'both') {
+            if (animationType === 'scale' && scrollAnimation === 'both') {
               entry.target.classList.remove('scale-90');
               entry.target.classList.add('scale-100');
             }
-            if (animation === 'scale' && animationDir === 'right') {
+            if (animationType === 'scale' && scrollAnimation === 'reveal') {
               // do something
             }
           }
         } else {
           // Do something when element is not visible
           if (hasAnimation) {
-            if (animation === 'opacity' && animationDir === 'both') {
+            if (animationType === 'opacity' && scrollAnimation === 'both') {
               entry.target.classList.add('opacity-0');
               entry.target.classList.remove('opacity-100');
             }
-            if (animation === 'opacity' && animationDir === 'right') {
+            if (animationType === 'opacity' && scrollAnimation === 'reveal') {
               entry.target.classList.add('opacity-0');
             }
-            if (animation === 'scale' && animationDir === 'both') {
+            if (animationType === 'scale' && scrollAnimation === 'both') {
               entry.target.classList.add('scale-90');
               entry.target.classList.remove('scale-100');
             }
-            if (animation === 'scale' && animationDir === 'right') {
+            if (animationType === 'scale' && scrollAnimation === 'reveal') {
               // do something
             }
           }
@@ -110,22 +111,25 @@ export function Slider({
         observer.unobserve(element);
       });
     };
-  }, [children, hasAnimation, animation, animationDir]); // Uppdatera observeraren när children ändras}
+  }, [children, hasAnimation, animationType, scrollAnimation]); // Uppdatera observeraren när children ändras}
 
   const handleScroll = () => {
     if (sliderComponentsRef.current) {
+      // setSnapIsOn(false);
       setCurrentX(sliderComponentsRef.current.scrollLeft);
     }
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLElement>) => {
     if (mouseIsDown) return;
-
+    // setSnapIsOn(false);
     setMouseIsDown(true);
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (!mouseIsDown) return;
+
+    // setSnapIsOn(false);
 
     e.stopPropagation();
     e.preventDefault();
@@ -140,11 +144,15 @@ export function Slider({
   const handleMouseUp = () => {
     if (!mouseIsDown) return;
 
+    // setSnapIsOn(true);
+
     setMouseIsDown(false);
   };
 
   const handleMouseLeave = () => {
     if (!mouseIsDown) return;
+
+    // setSnapIsOn(true);
 
     setMouseIsDown(false);
   };
@@ -212,8 +220,7 @@ export function Slider({
               onClick={() => {
                 setCurrentX((currentX) =>
                   sliderComponentsRef.current
-                    ? // currentX ska vara += 1 tills dess att currentX når en viss bredd eller nej?
-                      (currentX +=
+                    ? (currentX +=
                         (sliderComponentsRef.current.clientWidth * scrollWidthInPercentage) / 100)
                     : (currentX += 0)
                 );
@@ -229,9 +236,8 @@ export function Slider({
         ref={sliderComponentsRef}
         onScroll={handleScroll}
         className={cn(
-          'components-wrapper flex cursor-grab overscroll-x-contain',
-          'snap-x snap-mandatory',
-          // 'transition duration-500 ease-in-out',
+          'components-wrapper flex cursor-grab overscroll-x-contain transition duration-500 ease-in-out',
+          // snapIsOn && 'snap-x snap-mandatory',
           hasScrollbar ? 'overflow-auto' : 'overflow-hidden',
           mouseIsDown && 'cursor-grabbing',
           componentsWrapper
@@ -241,9 +247,8 @@ export function Slider({
           return (
             <div
               className={cn(
-                'component-wrapper grow-0 shrink-0 overflow-hidden w-60 aspect-auto',
-                'snap-end snap-normal',
-                hasAnimation && 'transition duration-500 ease-in-out',
+                'component-wrapper grow-0 shrink-0 overflow-hidden transition duration-500 ease-in-out',
+                // snapIsOn && 'snap-center snap-normal',
                 componentWrapper
               )}
               data-test={`component-wrapper-${index + 1}`}
