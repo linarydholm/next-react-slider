@@ -212,7 +212,8 @@ export function Slider({
               onClick={() => {
                 setCurrentX((currentX) =>
                   sliderComponentsRef.current
-                    ? (currentX +=
+                    ? // currentX ska vara += 1 tills dess att currentX når en viss bredd eller nej?
+                      (currentX +=
                         (sliderComponentsRef.current.clientWidth * scrollWidthInPercentage) / 100)
                     : (currentX += 0)
                 );
@@ -229,6 +230,8 @@ export function Slider({
         onScroll={handleScroll}
         className={cn(
           'components-wrapper flex cursor-grab overscroll-x-contain',
+          'snap-x snap-mandatory',
+          // 'transition duration-500 ease-in-out',
           hasScrollbar ? 'overflow-auto' : 'overflow-hidden',
           mouseIsDown && 'cursor-grabbing',
           componentsWrapper
@@ -237,6 +240,12 @@ export function Slider({
         {Children.map(children, (child, index) => {
           return (
             <div
+              className={cn(
+                'component-wrapper grow-0 shrink-0 overflow-hidden w-60 aspect-auto',
+                'snap-end snap-normal',
+                hasAnimation && 'transition duration-500 ease-in-out',
+                componentWrapper
+              )}
               data-test={`component-wrapper-${index + 1}`}
               // Storing an array of elements using the useRef hook: https://mattclaffey.medium.com/adding-react-refs-to-an-array-of-items-96e9a12ab40c
               ref={(element) => {
@@ -244,11 +253,6 @@ export function Slider({
                   itemEls.current.push(element);
                 }
               }}
-              className={cn(
-                'component-wrapper grow-0 shrink-0 overflow-hidden w-60 aspect-auto',
-                hasAnimation && 'transition duration-500 ease-in-out',
-                componentWrapper
-              )}
             >
               {child}
             </div>
