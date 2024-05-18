@@ -25,17 +25,16 @@ All props except **children** are optional.
 
 ### Available component settings:
 
-| Prop                    | Type                                   | Default value | Union type options |
-| ----------------------- | -------------------------------------- | ------------- | ------------------ |
-| children                | ReactElement or array of ReactElements | undefined     |
-| hasButtons              | boolean                                | false         |
-| buttonLeftNode          | ReactNode                              | '<'           |
-| buttonRightNode         | ReactNode                              | '>'           |
-| hasScrollbar            | boolean                                | false         |
-| hasAnimation            | boolean                                | false         |
-| animationType           | string                                 | 'opacity'     | 'opacity'          |
-| scrollAnimation         | string                                 | 'reveal'      | 'reveal', 'both'   |
-| scrollWidthInPercentage | number                                 | 100           |
+| Prop                    | Type      | Default value | Union type options |
+| ----------------------- | --------- | ------------- | ------------------ |
+| hasButtons              | boolean   | false         |
+| buttonLeftNode          | ReactNode | '<'           |
+| buttonRightNode         | ReactNode | '>'           |
+| hasScrollbar            | boolean   | false         |
+| hasAnimation            | boolean   | false         |
+| animationType           | string    | 'opacity'     | 'opacity'          |
+| scrollAnimation         | string    | 'reveal'      | 'reveal', 'both'   |
+| scrollWidthInPercentage | number    | 100           |
 
 ### Available classes as settings:
 
