@@ -13,6 +13,7 @@ export default function App() {
       buttonLeftNode={<ChevronLeft />}
       buttonRightNode={<ChevronRight />}
       hasAnimation={true}
+      // hasScrollbar={true}
       scrollAnimation="both"
       scrollWidthInPercentage={75}
       // classes:

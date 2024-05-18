@@ -1,7 +1,7 @@
 'use client';
 
 // imports
-import { useRef, useState, useEffect, Children } from 'react';
+import { useRef, useState, useEffect, Children, cloneElement } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { ClassValue, clsx } from 'clsx';
 
@@ -124,14 +124,19 @@ export function Slider({
   const handleWheel = (e: React.WheelEvent<HTMLElement>) => {
     if (!componentsWrapperRef.current) return;
 
-    const xScroll = (componentsWrapperRef.current.scrollLeft += e.deltaX);
+    const deltaX = e.deltaX;
+    const xScroll = componentsWrapperRef.current.scrollLeft + deltaX;
+
     setCurrentX(xScroll);
   };
 
-  const handleMouseDown = () => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLElement>) => {
     if (mouseIsDown) return;
 
+    console.log(e.target);
+
     setMouseIsDown(true);
+    setStartX(e.clientX);
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
@@ -140,10 +145,12 @@ export function Slider({
     e.stopPropagation();
     e.preventDefault();
 
-    const { movementX } = e;
+    const clientX = e.clientX;
+    const movementX = clientX - startX;
 
-    if (movementX > 0 || movementX < 0) {
-      setCurrentX((currentX) => (currentX -= e.movementX));
+    if (movementX !== 0) {
+      setCurrentX((currentX) => currentX - movementX);
+      setStartX(clientX);
     }
   };
 
@@ -290,7 +297,7 @@ export function Slider({
                 }
               }}
             >
-              {child}
+              {cloneElement(child, { draggable: false })}
             </div>
           );
         })}
