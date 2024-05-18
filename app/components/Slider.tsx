@@ -115,10 +115,8 @@ export function Slider({
   }, [children, hasAnimation, animationType, scrollAnimation]);
 
   // Events
-  const handleScroll = () => {
+  const handleScrollCapture = () => {
     if (!componentsWrapperRef.current) return;
-
-    console.log('handleScroll');
 
     setCurrentX(componentsWrapperRef.current.scrollLeft);
   };
@@ -128,8 +126,6 @@ export function Slider({
 
     const deltaX = e.deltaX;
     const xScroll = componentsWrapperRef.current.scrollLeft + deltaX;
-
-    console.log('handleWheel');
 
     setCurrentX(xScroll);
   };
@@ -213,8 +209,6 @@ export function Slider({
       componentsWrapperRef.current.scrollLeft = updatedCurrentX;
       setCurrentX(updatedCurrentX);
     }
-
-    console.log(currentX);
   }, [currentX, scrollMax]);
 
   return (
@@ -222,7 +216,7 @@ export function Slider({
       {...restProps}
       data-description="slider-wrapper"
       ref={sliderWrapperRef}
-      onScrollCapture={handleScroll}
+      onScrollCapture={handleScrollCapture}
       onWheel={handleWheel}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
