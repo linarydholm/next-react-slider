@@ -11,7 +11,7 @@ const cn = (...inputs: ClassValue[]) => {
 };
 
 // TypeScript
-interface SliderProps extends React.HTMLAttributes<HTMLElement> {
+type SliderProps = React.HTMLAttributes<HTMLElement> & {
   children: React.ReactElement | React.ReactElement[];
   hasButtons?: boolean;
   buttonLeftNode?: React.ReactNode;
@@ -27,7 +27,7 @@ interface SliderProps extends React.HTMLAttributes<HTMLElement> {
   buttonRightStyle?: string;
   componentsWrapperStyle?: string;
   componentWrapperStyle?: string;
-}
+};
 
 // Component
 export function Slider({
@@ -63,20 +63,19 @@ export function Slider({
     ? componentsWrapperRef.current.scrollWidth - componentsWrapperRef.current.clientWidth
     : 0;
 
-  // Intersection Observer using React: https://dev.to/producthackers/intersection-observer-using-react-49ko
+  // Intersection observer
   useEffect(() => {
-    // Intersection observer options: https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API#creating_an_intersection_observer
+    // Observer options
     const options = {
       root: null,
       rootMargin: '0px',
       threshold: 0,
     };
 
-    // Observe visibility of children components
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          // Do something when element is visible
+          // When element is visible
           if (hasAnimation) {
             if (animationType === 'opacity' && scrollAnimation === 'both') {
               entry.target.classList.remove('opacity-0');
@@ -87,7 +86,7 @@ export function Slider({
             }
           }
         } else {
-          // Do something when element is not visible
+          // When element is NOT visible
           if (hasAnimation) {
             if (animationType === 'opacity' && scrollAnimation === 'both') {
               entry.target.classList.add('opacity-0');
@@ -101,19 +100,21 @@ export function Slider({
       });
     }, options);
 
-    // Observera varje barnkomponent
-    componentWrapperRefs.current.forEach((element) => {
+    // Observe children
+    const currentItems = componentWrapperRefs.current;
+    currentItems.forEach((element) => {
       observer.observe(element);
     });
 
-    // Avsluta observeraren när komponenten avmonteras
+    // Cancel observer when component unmounts
     return () => {
-      componentWrapperRefs.current.forEach((element) => {
+      currentItems.forEach((element) => {
         observer.unobserve(element);
       });
     };
-  }, [children, hasAnimation, animationType, scrollAnimation]); // Uppdatera observeraren när children ändras}
+  }, [children, hasAnimation, animationType, scrollAnimation]);
 
+  // Events
   const handleScroll = () => {
     if (componentsWrapperRef.current) {
       setCurrentX(componentsWrapperRef.current.scrollLeft);
@@ -121,10 +122,10 @@ export function Slider({
   };
 
   const handleWheel = (e: React.WheelEvent<HTMLElement>) => {
-    if (componentsWrapperRef.current) {
-      const xScroll = (componentsWrapperRef.current.scrollLeft += e.deltaX);
-      setCurrentX(xScroll);
-    }
+    if (!componentsWrapperRef.current) return;
+
+    const xScroll = (componentsWrapperRef.current.scrollLeft += e.deltaX);
+    setCurrentX(xScroll);
   };
 
   const handleMouseDown = () => {
@@ -183,7 +184,7 @@ export function Slider({
     setMouseIsDown(false);
   };
 
-  // a function that checks and corrects currentX every time currentX updates
+  // Functions
   const checkAndReturnCurrentX = (currentX: number, scrollMax: number) => {
     if (currentX < 0) {
       setCurrentX(0);
@@ -283,7 +284,6 @@ export function Slider({
                 hasAnimation && 'transition duration-300 ease-in-out',
                 componentWrapperStyle
               )}
-              // Storing an array of elements using the useRef hook: https://mattclaffey.medium.com/adding-react-refs-to-an-array-of-items-96e9a12ab40c
               ref={(element) => {
                 if (element) {
                   componentWrapperRefs.current.push(element);
