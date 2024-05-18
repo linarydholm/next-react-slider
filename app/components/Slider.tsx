@@ -124,10 +124,7 @@ export function Slider({
   const handleWheel = (e: React.WheelEvent<HTMLElement>) => {
     if (!componentsWrapperRef.current) return;
 
-    const deltaX = e.deltaX;
-    const xScroll = componentsWrapperRef.current.scrollLeft + deltaX;
-
-    setCurrentX(xScroll);
+    setCurrentX((currentX) => currentX + e.deltaX);
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLElement>) => {
