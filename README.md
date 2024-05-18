@@ -1,81 +1,77 @@
-1. Import Slider
+# Reausable Slider created with Next, React, Tailwind and TypeScript
 
-2. Map out your components inside <Slider>here</Slider>
+## How to import:
 
-3. Send settings as props
+Import the Slider to your project built with Next, React, Tailwind and TypeScript in one of the two ways:
 
-4. Available global settings:
-   hasButtons
-   boolean (defaults to true)
+- **Option 1 (recommended):** Copy everything from app/components/Slider.tsx with <kbd>cmd</kbd> + <kbd>A</kbd>. Create a new file that ends with .tsx for the component in your own project and paste the Slider here.
+- **Option 2:** Use git clone to get the full repo.
 
-   hasScrollbar
-   boolean (defaults to true)
+## How to use:
 
-   scrollInPercentage
-   number (should be between 10-100, defaults to 25)
-
-5. You can also add to or override the following classes:
-   sliderWrapper
-   defaults to 'slider-wrapper relative'
-
-   buttonsWrapper
-   defaults to 'buttons-wrapper absolute pointer-events-none inset-0'
-
-   buttonLeft
-   defaults to 'button-left absolute pointer-events-auto',
-   styleButton === 'button-left' && 'hidden'
-
-   buttonRight
-   defaults to 'button-right absolute pointer-events-auto',
-   styleButton === 'button-right' && 'hidden'
-
-   componentsWrapper
-   defaults to 'components-wrapper flex cursor-grab overscroll-x-contain',
-   hasScrollbar ? 'overflow-auto' : 'overflow-hidden',
-   mouseIsDown && 'cursor-grabbing'
-
-   componentWrapper
-   defaults to 'component-wrapper grow-0 shrink-0 overflow-hidden w-60 aspect-auto'
-
-6.
-
-<br/>
-<br/>
-<br/>
-
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
-## Getting Started
-
-First, run the development server:
+The Slider-component renders the children in a slider automatically. Map out your components inside the Slider (recommended) or build your components directly in it.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+<Slider>
+   Map out or build your components here.
+</Slider>
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Props:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The Slider-component receives the pre-built settings as props.
+<br/>
+All props except **children** are optional.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Available component settings:
 
-## Learn More
+| Prop                    | Type                                   | Default value | Union type options |
+| ----------------------- | -------------------------------------- | ------------- | ------------------ |
+| children                | ReactElement or array of ReactElements | undefined     |
+| hasButtons              | boolean                                | false         |
+| buttonLeftNode          | ReactNode                              | '<'           |
+| buttonRightNode         | ReactNode                              | '>'           |
+| hasScrollbar            | boolean                                | false         |
+| hasAnimation            | boolean                                | false         |
+| animationType           | string                                 | 'opacity'     | 'opacity'          |
+| scrollAnimation         | string                                 | 'reveal'      | 'reveal', 'both'   |
+| scrollWidthInPercentage | number                                 | 100           |
 
-To learn more about Next.js, take a look at the following resources:
+### Available classes as settings:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+We do not recommend changing the styles in the Slider-component file.
+<br/>
+Add more styling or override default class values on elements with the following props:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+| Prop                   | Type   | Default value                                                                                                                               |
+| ---------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| sliderWrapperStyle     | string | 'relative z-0'                                                                                                                              |
+| buttonsWrapperStyle    | string | 'absolute pointer-events-none inset-0 z-50'                                                                                                 |
+| buttonLeftStyle        | string | 'absolute pointer-events-auto'                                                                                                              |
+| buttonRightStyle       | string | 'absolute pointer-events-auto'                                                                                                              |
+| componentsWrapperStyle | string | 'flex overscroll-x-contain hover:cursor-grab', mouseIsDown && 'hover:cursor-grabbing', hasScrollbar ? 'overflow-x-auto' : 'overflow-hidden' |
+| componentWrapperStyle  | string | 'grow-0 shrink-0 overflow-hidden', hasAnimation && 'transition duration-300 ease-in-out'                                                    |
 
-## Deploy on Vercel
+### Example usage of settings as props:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+<Slider
+   hasButtons={true}
+   buttonLeftNode={<ChevronLeft/>}
+   buttonRightNode={<ChevronRight/>}
+   hasAnimation={true}
+   scrollAnimation="both"
+   scrollWidthInPercentage={75}
+   buttonLeftStyle='p-2 bg-white text-gray-900 rounded top-1/2 -translate-y-1/2 left-6 opacity-100 transition-opacity disabled:opacity-0'
+   buttonRightStyle='p-2 bg-white text-gray-900 rounded top-1/2 -translate-y-1/2 right-6 opacity-100 transition-opacity disabled:opacity-0'
+   componentsWrapperStyle='p-2 gap-2 md:p-4 xl:p-6 md:gap-4 xl:gap-6'
+   componentWrapperStyle='w-1/2 md:w-1/3 xl:w-1/4 aspect-[4/5]'
+>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+   Map out or build your components here.
+</Slider>
+```
+
+## More information:
+
+Everything you need for the Slider is built in the same file. If your project has another file structure - feel free to separate and move for example util-functions and types outside the component-file.

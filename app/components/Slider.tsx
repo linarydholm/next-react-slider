@@ -32,11 +32,11 @@ type SliderProps = React.HTMLAttributes<HTMLElement> & {
 // Component
 export function Slider({
   children,
-  hasButtons = true,
+  hasButtons = false,
   buttonLeftNode = '<',
   buttonRightNode = '>',
-  hasScrollbar = true,
-  hasAnimation = true,
+  hasScrollbar = false,
+  hasAnimation = false,
   animationType = 'opacity',
   scrollAnimation = 'reveal',
   scrollWidthInPercentage = 100,
