@@ -72,6 +72,6 @@ Add more styling or override default class values on elements with the following
 </Slider>
 ```
 
-## More information:
+## File structure:
 
 Everything you need for the Slider is built in the same file. If your project has another file structure - feel free to separate and move for example util-functions and types outside the component-file.
