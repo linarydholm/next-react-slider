@@ -1,51 +1,66 @@
 'use client';
 
+// imports
 import { useRef, useState, useEffect, Children } from 'react';
-import { cn } from '../utils/cn';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { twMerge } from 'tailwind-merge';
+import { ClassValue, clsx } from 'clsx';
 
+// util functions
+const cn = (...inputs: ClassValue[]) => {
+  return twMerge(clsx(inputs));
+};
+
+// TypeScript
 interface SliderProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactElement | React.ReactElement[];
   hasButtons?: boolean;
+  buttonLeftNode?: React.ReactNode;
+  buttonRightNode?: React.ReactNode;
   hasScrollbar?: boolean;
   hasAnimation?: boolean;
-  animationType?: 'opacity' | 'scale';
+  animationType?: 'opacity';
   scrollAnimation?: 'reveal' | 'both';
   scrollWidthInPercentage?: number;
-  sliderWrapper?: string;
-  buttonsWrapper?: string;
-  buttonLeft?: string;
-  buttonRight?: string;
-  componentsWrapper?: string;
-  componentWrapper?: string;
+  sliderWrapperStyle?: string;
+  buttonsWrapperStyle?: string;
+  buttonLeftStyle?: string;
+  buttonRightStyle?: string;
+  componentsWrapperStyle?: string;
+  componentWrapperStyle?: string;
 }
 
+// Component
 export function Slider({
   children,
   hasButtons = true,
+  buttonLeftNode = '<',
+  buttonRightNode = '>',
   hasScrollbar = true,
   hasAnimation = true,
   animationType = 'opacity',
   scrollAnimation = 'reveal',
   scrollWidthInPercentage = 100,
-  sliderWrapper,
-  buttonsWrapper,
-  buttonLeft,
-  buttonRight,
-  componentsWrapper,
-  componentWrapper,
+  sliderWrapperStyle,
+  buttonsWrapperStyle,
+  buttonLeftStyle,
+  buttonRightStyle,
+  componentsWrapperStyle,
+  componentWrapperStyle,
   ...restProps
 }: SliderProps) {
-  const sliderRef = useRef<HTMLDivElement | null>(null);
-  const sliderComponentsRef = useRef<HTMLDivElement | null>(null);
-  const itemEls = useRef<HTMLDivElement[]>([]);
+  // Refs
+  const sliderWrapperRef = useRef<HTMLDivElement | null>(null);
+  const componentsWrapperRef = useRef<HTMLDivElement | null>(null);
+  const componentWrapperRefs = useRef<HTMLDivElement[]>([]);
 
+  // States
   const [currentX, setCurrentX] = useState(0);
   const [mouseIsDown, setMouseIsDown] = useState(false);
-  // const [snapIsOn, setSnapIsOn] = useState(true);
+  const [startX, setStartX] = useState(0);
 
-  const scrollMax = sliderComponentsRef.current
-    ? sliderComponentsRef.current.scrollWidth - sliderComponentsRef.current.clientWidth
+  // Variables
+  const scrollMax = componentsWrapperRef.current
+    ? componentsWrapperRef.current.scrollWidth - componentsWrapperRef.current.clientWidth
     : 0;
 
   // Intersection Observer using React: https://dev.to/producthackers/intersection-observer-using-react-49ko
@@ -70,13 +85,6 @@ export function Slider({
             if (animationType === 'opacity' && scrollAnimation === 'reveal') {
               entry.target.classList.add('opacity-100');
             }
-            if (animationType === 'scale' && scrollAnimation === 'both') {
-              entry.target.classList.remove('scale-90');
-              entry.target.classList.add('scale-100');
-            }
-            if (animationType === 'scale' && scrollAnimation === 'reveal') {
-              // do something
-            }
           }
         } else {
           // Do something when element is not visible
@@ -88,48 +96,45 @@ export function Slider({
             if (animationType === 'opacity' && scrollAnimation === 'reveal') {
               entry.target.classList.add('opacity-0');
             }
-            if (animationType === 'scale' && scrollAnimation === 'both') {
-              entry.target.classList.add('scale-90');
-              entry.target.classList.remove('scale-100');
-            }
-            if (animationType === 'scale' && scrollAnimation === 'reveal') {
-              // do something
-            }
           }
         }
       });
     }, options);
 
     // Observera varje barnkomponent
-    itemEls.current.forEach((element) => {
+    componentWrapperRefs.current.forEach((element) => {
       observer.observe(element);
     });
 
     // Avsluta observeraren när komponenten avmonteras
     return () => {
-      itemEls.current.forEach((element) => {
+      componentWrapperRefs.current.forEach((element) => {
         observer.unobserve(element);
       });
     };
   }, [children, hasAnimation, animationType, scrollAnimation]); // Uppdatera observeraren när children ändras}
 
   const handleScroll = () => {
-    if (sliderComponentsRef.current) {
-      // setSnapIsOn(false);
-      setCurrentX(sliderComponentsRef.current.scrollLeft);
+    if (componentsWrapperRef.current) {
+      setCurrentX(componentsWrapperRef.current.scrollLeft);
     }
   };
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLElement>) => {
+  const handleWheel = (e: React.WheelEvent<HTMLElement>) => {
+    if (componentsWrapperRef.current) {
+      const xScroll = (componentsWrapperRef.current.scrollLeft += e.deltaX);
+      setCurrentX(xScroll);
+    }
+  };
+
+  const handleMouseDown = () => {
     if (mouseIsDown) return;
-    // setSnapIsOn(false);
+
     setMouseIsDown(true);
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (!mouseIsDown) return;
-
-    // setSnapIsOn(false);
 
     e.stopPropagation();
     e.preventDefault();
@@ -137,14 +142,12 @@ export function Slider({
     const { movementX } = e;
 
     if (movementX > 0 || movementX < 0) {
-      setCurrentX((currentX) => (currentX -= movementX));
+      setCurrentX((currentX) => (currentX -= e.movementX));
     }
   };
 
   const handleMouseUp = () => {
     if (!mouseIsDown) return;
-
-    // setSnapIsOn(true);
 
     setMouseIsDown(false);
   };
@@ -152,11 +155,35 @@ export function Slider({
   const handleMouseLeave = () => {
     if (!mouseIsDown) return;
 
-    // setSnapIsOn(true);
+    setMouseIsDown(false);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLElement>) => {
+    if (mouseIsDown) return;
+
+    setMouseIsDown(true);
+    setStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLElement>) => {
+    if (!mouseIsDown) return;
+
+    const clientX = e.touches[0].clientX;
+    const movementX = clientX - startX;
+
+    if (movementX !== 0) {
+      setCurrentX((currentX) => currentX - movementX);
+      setStartX(clientX);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!mouseIsDown) return;
 
     setMouseIsDown(false);
   };
 
+  // a function that checks and corrects currentX every time currentX updates
   const checkAndReturnCurrentX = (currentX: number, scrollMax: number) => {
     if (currentX < 0) {
       setCurrentX(0);
@@ -171,91 +198,95 @@ export function Slider({
 
   useEffect(() => {
     const updatedCurrentX = checkAndReturnCurrentX(currentX, scrollMax);
-    if (sliderComponentsRef.current) {
-      sliderComponentsRef.current.scrollLeft = updatedCurrentX;
+
+    if (componentsWrapperRef.current) {
+      componentsWrapperRef.current.scrollLeft = updatedCurrentX;
       setCurrentX(updatedCurrentX);
     }
-
-    // console.log(currentX, scrollMax);
   }, [currentX, scrollMax]);
 
   return (
     <section
-      ref={sliderRef}
       {...restProps}
+      data-description="slider-wrapper"
+      ref={sliderWrapperRef}
+      onScroll={handleScroll}
+      onWheel={handleWheel}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
-      className={cn('slider-wrapper relative z-10', sliderWrapper)}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className={cn('relative z-0', sliderWrapperStyle)}
     >
       {hasButtons && (
         <div
-          className={cn(
-            'buttons-wrapper absolute pointer-events-none inset-0 z-30',
-            buttonsWrapper
-          )}
+          data-description="buttons-wrapper"
+          className={cn('absolute pointer-events-none inset-0 z-50', buttonsWrapperStyle)}
         >
           {
             <button
-              className={cn('button-left absolute pointer-events-auto', buttonLeft)}
+              data-description="button-left"
+              className={cn('absolute pointer-events-auto', buttonLeftStyle)}
               disabled={currentX < 5}
               onClick={() => {
                 setCurrentX((currentX) =>
-                  sliderComponentsRef.current
+                  componentsWrapperRef.current
                     ? (currentX -=
-                        sliderComponentsRef.current.clientWidth * (scrollWidthInPercentage / 100))
+                        componentsWrapperRef.current.clientWidth * (scrollWidthInPercentage / 100))
                     : (currentX -= 0)
                 );
               }}
             >
-              <ChevronLeft />
+              {buttonLeftNode}
             </button>
           }
 
           {
             <button
-              className={cn('button-right absolute pointer-events-auto', buttonRight)}
+              data-description="button-right"
+              className={cn('absolute pointer-events-auto', buttonRightStyle)}
               disabled={scrollMax > 0 && currentX > scrollMax - 5}
               onClick={() => {
                 setCurrentX((currentX) =>
-                  sliderComponentsRef.current
+                  componentsWrapperRef.current
                     ? (currentX +=
-                        (sliderComponentsRef.current.clientWidth * scrollWidthInPercentage) / 100)
+                        (componentsWrapperRef.current.clientWidth * scrollWidthInPercentage) / 100)
                     : (currentX += 0)
                 );
               }}
             >
-              <ChevronRight />
+              {buttonRightNode}
             </button>
           }
         </div>
       )}
 
       <div
-        ref={sliderComponentsRef}
-        onScroll={handleScroll}
+        data-description="components-wrapper"
+        ref={componentsWrapperRef}
         className={cn(
-          'components-wrapper flex cursor-grab overscroll-x-contain transition duration-500 ease-in-out',
-          // snapIsOn && 'snap-x snap-mandatory',
-          hasScrollbar ? 'overflow-auto' : 'overflow-hidden',
-          mouseIsDown && 'cursor-grabbing',
-          componentsWrapper
+          'flex overscroll-x-contain hover:cursor-grab',
+          mouseIsDown && 'hover:cursor-grabbing',
+          hasScrollbar ? 'overflow-x-auto' : 'overflow-hidden',
+          componentsWrapperStyle
         )}
       >
-        {Children.map(children, (child, index) => {
+        {Children.map(children, (child) => {
           return (
             <div
+              data-description="component-wrapper"
               className={cn(
-                'component-wrapper grow-0 shrink-0 overflow-hidden transition duration-500 ease-in-out',
-                // snapIsOn && 'snap-center snap-normal',
-                componentWrapper
+                'grow-0 shrink-0 overflow-hidden',
+                hasAnimation && 'transition duration-300 ease-in-out',
+                componentWrapperStyle
               )}
-              data-test={`component-wrapper-${index + 1}`}
               // Storing an array of elements using the useRef hook: https://mattclaffey.medium.com/adding-react-refs-to-an-array-of-items-96e9a12ab40c
               ref={(element) => {
                 if (element) {
-                  itemEls.current.push(element);
+                  componentWrapperRefs.current.push(element);
                 }
               }}
             >
