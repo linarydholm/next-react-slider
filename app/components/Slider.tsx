@@ -133,8 +133,6 @@ export function Slider({
   const handleMouseDown = (e: React.MouseEvent<HTMLElement>) => {
     if (mouseIsDown) return;
 
-    console.log(e.target);
-
     setMouseIsDown(true);
     setStartX(e.clientX);
   };
