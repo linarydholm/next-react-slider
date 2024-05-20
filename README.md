@@ -7,6 +7,8 @@ Import the Slider to your project built with Next, React, Tailwind and TypeScrip
 - **Option 1 (recommended):** Copy everything from app/components/Slider.tsx with <kbd>cmd</kbd> + <kbd>A</kbd>. Create a new file that ends with .tsx for the component in your own project and paste the Slider here.
 - **Option 2:** Use git clone to get the full repo.
 
+Don't forget to run `npm install` to get all dependencies.
+
 ## How to use:
 
 The Slider-component renders the children in a slider automatically. Map out your components inside the Slider (recommended) or build your components directly in it.
