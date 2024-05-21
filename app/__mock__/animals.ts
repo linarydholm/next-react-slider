@@ -1,4 +1,4 @@
-export const products = [
+export const animals = [
   {
     image: {
       src: 'https://images.unsplash.com/flagged/photo-1557650454-65194af63bf9?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -6,10 +6,6 @@ export const products = [
       alt: 'rhino',
       width: 2000,
       height: 2000,
-    },
-    product: {
-      title: 'rhino',
-      price: 12999,
     },
   },
   {
@@ -20,10 +16,6 @@ export const products = [
       width: 2000,
       height: 2000,
     },
-    product: {
-      title: 'polar bear',
-      price: 12999,
-    },
   },
   {
     image: {
@@ -32,10 +24,6 @@ export const products = [
       alt: 'parrot',
       width: 2000,
       height: 2000,
-    },
-    product: {
-      title: 'parrot',
-      price: 12999,
     },
   },
   {
@@ -46,10 +34,6 @@ export const products = [
       width: 2000,
       height: 2000,
     },
-    product: {
-      title: 'tiger',
-      price: 12999,
-    },
   },
   {
     image: {
@@ -58,10 +42,6 @@ export const products = [
       alt: 'fox',
       width: 2000,
       height: 2000,
-    },
-    product: {
-      title: 'fox',
-      price: 12999,
     },
   },
   {
@@ -72,10 +52,6 @@ export const products = [
       width: 2000,
       height: 2000,
     },
-    product: {
-      title: 'dear',
-      price: 12999,
-    },
   },
   {
     image: {
@@ -84,10 +60,6 @@ export const products = [
       alt: 'little fox',
       width: 2000,
       height: 2000,
-    },
-    product: {
-      title: 'little fox',
-      price: 12999,
     },
   },
   {
@@ -98,10 +70,6 @@ export const products = [
       width: 2000,
       height: 2000,
     },
-    product: {
-      title: 'goldfish',
-      price: 12999,
-    },
   },
   {
     image: {
@@ -111,10 +79,6 @@ export const products = [
       width: 2000,
       height: 2000,
     },
-    product: {
-      title: 'peacock',
-      price: 12999,
-    },
   },
   {
     image: {
@@ -123,10 +87,6 @@ export const products = [
       alt: 'lamb',
       width: 2000,
       height: 2000,
-    },
-    product: {
-      title: 'lamb',
-      price: 12999,
     },
   },
 ];
